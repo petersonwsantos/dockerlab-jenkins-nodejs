@@ -1,0 +1,28 @@
+job('NodeJS Docker example') {
+    // http://jenkinsci.github.io/job-dsl-plugin/
+    scm {
+        git('git://github.com/wardviaene/docker-demo.git') {  node -> // is hudson.plugins.git.GitSCM
+            node / gitConfigName('DSL User')
+            node / gitConfigEmail('opeterson@hotmail.com')
+        }
+    }
+    triggers {
+        scm('H/5 * * * *')
+    }
+    wrappers {
+        nodejs('nodejs') // this is the name of the NodeJS installation in
+                         // Manage Jenkins -> Configure Tools -> NodeJS Installations -> Name
+    }
+    steps {
+        //http://jenkinsci.github.io/job-dsl-plugin/#method/javaposse.jobdsl.dsl.helpers.step.StepContext.dockerBuildAndPublish
+        dockerBuildAndPublish {
+            repositoryName('petersonwsantos/dockerlab-jenkins-nodejs')
+            tag('${GIT_REVISION,length=9}')  //
+            registryCredentials('dockerhub') // name jenkins object credencial
+            forcePull(false)
+            forceTag(false)
+            createFingerprints(false)
+            skipDecorate()
+        }
+    }
+}
