@@ -1,13 +1,13 @@
 node {
 
-  // config 
+  // config ex: CulpritsRecipientProvider=manager / DevelopersRecipientProvider=dev 
   def to = emailextrecipients([
           [$class: 'CulpritsRecipientProvider'],
           [$class: 'DevelopersRecipientProvider'],
           [$class: 'RequesterRecipientProvider']
   ])
 
-  // job
+  // job build and test. if fail ext 1 and execute catch (only lab test)
   try {
     stage('build') {
       println('so far so good...')
@@ -21,16 +21,18 @@ node {
     currentBuild.result = "FAILURE";
     // set variables
     def subject = "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} ${currentBuild.result}"
+    // this plugin for more information 
     def content = '${JELLY_SCRIPT,template="html"}'
 
-    // send email
+    // send email var to 
+    //  $DEFAULT_REPLYTO == Manage jenkins / configure system / Extended E-mail Notification / (Reply To List)
     if(to != null && !to.isEmpty()) {
       emailext(body: content, mimeType: 'text/html',
          replyTo: '$DEFAULT_REPLYTO', subject: subject,
          to: to, attachLog: true )
     }
 
-    // mark current build as a failure and throw the error
+    // var "e" > mark current build as a failure and throw the error
     throw e;
   }
 }
