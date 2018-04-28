@@ -2,7 +2,7 @@ job('NodeJS Docker example') {
     // http://jenkinsci.github.io/job-dsl-plugin/
     scm {
         git('https://github.com/petersonwsantos/dockerlab-jenkins-nodejs.git') {  node -> // is hudson.plugins.git.GitSCM
-            node / gitConfigName('DSL User')
+            node / gitConfigName('petersonwsantos')
             node / gitConfigEmail('opeterson@hotmail.com')
         }
     }
